@@ -118,7 +118,6 @@ with st.expander("Input more Keywords"):
 kw_dict = {k: v for k, v in kw_dict.items() if v!=''}
 
 def enable_headless_download(browser, download_path):
-    # Add missing support for chrome "send_command" to selenium webdriver
     browser.command_executor._commands["send_command"] = \
         ("POST", '/session/$sessionId/chromium/send_command')
  
@@ -126,8 +125,7 @@ def enable_headless_download(browser, download_path):
               'params': {'behavior': 'allow', 'downloadPath': download_path}}
     browser.execute("send_command", params)
 
-# Add arguments telling Selenium to not actually open a window
-
+    
 def download_files(ind, keyword, t= 10):
     download_path = os.getcwd() + str(ind)
     chrome_options = Options()
@@ -141,11 +139,9 @@ def download_files(ind, keyword, t= 10):
 #     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--window-size=1920x1080')
     url = f'https://trends.google.com/trends/explore?date={str(start)}%20{str(end)}&geo=FI&q=' + keyword
-    # Start up browser
     browser = webdriver.Chrome(ChromeDriverManager().install(),chrome_options=chrome_options)
     browser.get(url) 
     enable_headless_download(browser, download_path)
-    # Load webpage
     browser.get(url)
     time.sleep(t)
     button = browser.find_element("css selector",'.widget-actions-item.export')
@@ -156,7 +152,6 @@ def download_files(ind, keyword, t= 10):
     list_of_files = glob.glob(download_path+"\\*.csv") # * means all if need specific format then *.csv
     latest_file = max(list_of_files, key=os.path.getctime)
     df = pd.read_csv(latest_file).reset_index()
-    print(df)
     if df.shape[0]>1:
         df1=df[1:]
         df1.columns=[i.split(':')[0] if i not in ['Viikko','Week'] else 'date' for i in df.iloc[0]]
@@ -166,7 +161,7 @@ def download_files(ind, keyword, t= 10):
 def merge2df(df1, df2):
     df=df1.merge(df2, on='date')
     df['trans']=df[df.filter(regex='_x').columns].values/df[df.filter(regex='_y').columns].values
-    df['trans']=df['trans'].fillna(df['trans'].mean())
+    df['trans']=df['trans'].fillna(float(df[df.filter(regex='_x').columns].mean())/float(df[df.filter(regex='_y').columns].mean()))
     for col in df.columns[-(df2.shape[1]-1):-1]:
         if col != 'trans':
             df[col] = df['trans']*df[col]
@@ -268,34 +263,3 @@ if st.button('Calculate Google trends'):
     st.download_button(label='📥 Download trends data from the selected keywords',
                                     data=df_xlsx ,
                                     file_name= f'{file}.xlsx')
-# if st.button('♞ Add current keywords to BI reports! Be sure you add the right one, once it is added, it will be in reporting'):
-#     def keyword_excel(kw_dict, cat):
-#         df = pd.DataFrame(kw_dict.items(), columns=['keywords','afflix'])
-#         df['category'] = cat
-#         df['flag'] = 0
-#         return df
-#     if category not in keyw.category.unique():
-#         keyw = keyw.append(keyword_excel(kw_dict, category))
-#         keyw.to_excel('keywordlist.xlsx')
-#     else:
-#         st.markdown("<h5 style='text-align: left; color: black;'>\nCategory already exists, input a new one and add again!</h5>", unsafe_allow_html=True)
-# def to_excel2(df):
-#     output = BytesIO()
-#     writer = pd.ExcelWriter(output, engine='xlsxwriter')
-#     keyw.to_excel(writer, index=False, sheet_name='keywords')
-#     writer.save()
-#     processed_data = output.getvalue()
-#     return processed_data
-# df_xlsx = to_excel2(keyw)
-# st.download_button(label='Download keywords lists for BI report',
-#                                 data=df_xlsx ,
-#                                 file_name= 'keywordlist.xlsx')
-# rm_cat = st.text_input('Remove this category name from reporting list', value='Mobiililaajakaistaliittymät1')
-# if st.button('\26 When click this button the category will be removed from BI report! '):
-#     if rm_cat not in keyw.category.unique():
-#         st.markdown("<h5 style='text-align: left; color: black;'>\nCategory not found from reporting list!</h5>", unsafe_allow_html=True)
-#     else:
-#         keyw = keyw[keyw.category!=rm_cat]
-#         st.markdown("<h5 style='text-align: left; color: black;'>\nCategory removed.\n If you wish to download the updated keywordlist, please refresh the page.</h5>", unsafe_allow_html=True)
-#         keyw.to_excel('keywordlist.xlsx')
-
