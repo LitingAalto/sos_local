@@ -88,15 +88,15 @@ def df_result(kw_dict, category):
         if df.shape[0]>0:
             key1=(df.set_index('date') == 0).astype(int).sum(axis=0).sort_values(ascending=True).index[0]
             print(f"searching keywords:\n{search[:4]+[key1]}")
-#             try:
-            df1 = download_files(ind, (',').join(search[:4]+[key1]))
-            t+=10
-            time.sleep(t)
-#             except:
-#                 print(f"Retrying... taking 120 more seconds to download")
-#                 df1 = download_files(ind, (',').join(search[:4]+[key1]), t=120)
-#                 t+=10
-#                 time.sleep(t)
+            try:
+                df1 = download_files(ind, (',').join(search[:4]+[key1]))
+                t+=10
+                time.sleep(t)
+            except:
+                print(f"Retrying... taking 120 more seconds to download")
+                df1 = download_files(ind, (',').join(search[:4]+[key1]), t=120)
+                t+=10
+                time.sleep(t)
             if df1 is not None:
                 df = merge2df(df, df1)
             else:
@@ -105,15 +105,15 @@ def df_result(kw_dict, category):
             search = list(set(search)-set(search[:4]))
         else:
             print(f"searching keywords:\n{search[:5]}")
-#             try:
-            df1=download_files(ind, (',').join(search[:5]))
-            t+=10
-            time.sleep(t)
-#             except:
-#                 print(f"Retrying... taking 120 more seconds to download")
-#                 df1=download_files(ind, (',').join(search[:5]), t=120)
-#                 t+=10
-#                 time.sleep(t)
+            try:
+                df1=download_files(ind, (',').join(search[:5]))
+                t+=10
+                time.sleep(t)
+            except:
+                print(f"Retrying... taking 120 more seconds to download")
+                df1=download_files(ind, (',').join(search[:5]), t=120)
+                t+=10
+                time.sleep(t)
             if df1 is not None:
                 df = df1.copy()
             else:

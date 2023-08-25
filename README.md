@@ -11,8 +11,7 @@ This repository contains web scraper to scrap google trends data locally. There 
 
 ## Before you start
 
-It is recommended that you install anaconda navigator https://www.anaconda.com/products/distribution
-*Anaconda has python already set up in its environment. If you have already installed python & pip and your cmd/terminal recognize them, you can skip this step.
+Make sure that your terminal recoginze python and pip
 
 It is recommended that you install Power BI desktop https://powerbi.microsoft.com/en-us/downloads/, to visualize the result data.
 
@@ -36,7 +35,7 @@ And then run the script (sos_excel)
 ```python sos_excel.py```
 
 or (sos_app)
-```streamlit run sos_app.py```
+```streamlit run sos_App.py```
 
 
 Current this line is commented out in both scripts
