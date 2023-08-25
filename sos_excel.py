@@ -19,7 +19,7 @@ import os
 
 dt = date.today()
 end = (dt - timedelta(days=dt.weekday()+2)).strftime('%Y-%m-%d')
-start = str(int(end.split('-')[0])-2)+'-'+str(int(end.split('-')[1].split('-')[0])).zfill(2)+'-01'
+start = str(int(end.split('-')[0])-1)+'-'+str(int(end.split('-')[1].split('-')[0])).zfill(2)+'-01'
 dfk = pd.read_excel('keywordlist.xlsx').drop('Unnamed: 0',1)
 
 
@@ -33,7 +33,7 @@ def enable_headless_download(browser, download_path):
     browser.execute("send_command", params)
 
     
-def download_files(ind, keyword, t= 10):
+def download_files(ind, keyword, t= 15):
     download_path = os.getcwd() + str(ind)
     chrome_options = Options()
     download_prefs = {'download.default_directory' : download_path,
@@ -53,7 +53,7 @@ def download_files(ind, keyword, t= 10):
     time.sleep(t)
     button = browser.find_element("css selector",'.widget-actions-item.export')
     button.click()
-    time.sleep(5)
+    time.sleep(15)
     browser.quit()
     
     list_of_files = glob.glob(download_path+"\\*.csv") # * means all if need specific format then *.csv
